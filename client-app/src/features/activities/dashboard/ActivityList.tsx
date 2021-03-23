@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { SyntheticEvent, useState } from 'react';
 import { Button, Item, ItemContent, ItemDescription, ItemExtra, ItemGroup, ItemHeader, ItemMeta, Label, Segment } from 'semantic-ui-react';
 import { Activity } from '../../../app/models/activity';
 
@@ -7,10 +7,15 @@ interface Props{
     selectActivity: (Id:string)=>void;
     editMode:boolean;
     deleteActivity: (id:string)=>void;
+    submitting: boolean;
 }
 
-export default function ActivityList({activities, selectActivity, editMode, deleteActivity}: Props) {
-        
+export default function ActivityList({activities, selectActivity, editMode, deleteActivity, submitting}: Props) {
+    const [target, setTarget] = useState('');
+    function handleActivityDelee(e: SyntheticEvent<HTMLButtonElement>, id:string) {
+        setTarget(e.currentTarget.name);
+        deleteActivity(id);
+    }
     return(
         <Segment>
             <ItemGroup divided>
@@ -25,7 +30,15 @@ export default function ActivityList({activities, selectActivity, editMode, dele
                             </ItemDescription>
                             <ItemExtra>
                                 <Button disabled={editMode} onClick={()=>selectActivity(activity.id)} floated='right' content='View' color='blue'/>
-                                <Button disabled={editMode} onClick={()=>deleteActivity(activity.id)} floated='right' content='Delete' color='red'/>
+                                <Button 
+                                    name={activity.id}
+                                    loading={submitting && target === activity.id} 
+                                    disabled={editMode} 
+                                    onClick={(e)=>handleActivityDelee(e, activity.id)} 
+                                    floated='right' 
+                                    content='Delete' 
+                                    color='red'
+                                />
                                 <Label basic content={activity.category}/>
                             </ItemExtra>
                         </ItemContent>
