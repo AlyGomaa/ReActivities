@@ -1,25 +1,25 @@
-import React, { SyntheticEvent, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { SyntheticEvent, useState } from 'react';
 import { Button, Item, ItemContent, ItemDescription, ItemExtra, ItemGroup, ItemHeader, ItemMeta, Label, Segment } from 'semantic-ui-react';
-import { Activity } from '../../../app/models/activity';
+import { useStore } from '../../../app/stores/store';
 
-interface Props{
-    activities: Activity[];
-    selectActivity: (Id:string)=>void;
-    editMode:boolean;
-    deleteActivity: (id:string)=>void;
-    submitting: boolean;
-}
 
-export default function ActivityList({activities, selectActivity, editMode, deleteActivity, submitting}: Props) {
+export default observer(function ActivityList() {
+
+    const {activityStore} = useStore();
+    const {editMode, selectActivity, submitting, deleteActivity, activitiesByDate} = activityStore;
+
     const [target, setTarget] = useState('');
     function handleActivityDelee(e: SyntheticEvent<HTMLButtonElement>, id:string) {
         setTarget(e.currentTarget.name);
         deleteActivity(id);
     }
+
+
     return(
         <Segment>
             <ItemGroup divided>
-                {activities.map(activity =>(
+                {activitiesByDate.map(activity =>(
                     <Item key={activity.id}>
                         <ItemContent>
                             <ItemHeader as='a'>{activity.title}</ItemHeader>
@@ -47,4 +47,4 @@ export default function ActivityList({activities, selectActivity, editMode, dele
             </ItemGroup>
         </Segment>
     )
-}
+})
